@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - ModernBlog{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-r from-blue-600 to-indigo-700 py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Welcome to ModernBlog</h1>
+        <p class="text-xl text-blue-100 mb-8">Discover stories, thinking, and expertise from writers on any topic.</p>
+        
+        <form method="get" class="max-w-2xl mx-auto">
+            <div class="flex shadow-lg rounded-lg overflow-hidden">
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" 
+                       placeholder="Search articles..." 
+                       class="flex-1 px-6 py-4 text-lg focus:outline-none">
+                <button type="submit" class="bg-indigo-600 text-white px-8 py-4 font-semibold hover:bg-indigo-700 transition">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-wrap gap-2 mb-8">
+        <a href="{% url 'home' %}" class="px-4 py-2 rounded-full text-sm font-medium {% if not request.GET.category %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition">
+            All
+        </a>
+        {% for category in all_categories %}
+            <a href="?category={{ category.slug }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" 
+               class="px-4 py-2 rounded-full text-sm font-medium {% if request.GET.category == category.slug %}bg-blue-600 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %} transition">
+                {{ category.name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    {% if posts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in posts %}
+                <article class="bg-white rounded-xl shadow-sm overflow-hidden card-hover fade-in">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-48 object-cover">
+                    {% else %}
+                        <div class="w-full h-48 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                            <i class="fas fa-image text-4xl text-white opacity-50"></i>
+                        </div>
+                    {% endif %}
+                    <div class="p-6">
+                        <span class="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full mb-3">
+                            {{ post.category.name }}
+                        </span>
+                        <h2 class="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+                            <a href="{% url 'post_detail' post.slug %}" class="hover:text-blue-600 transition">
+                                {{ post.title }}
+                            </a>
+                        </h2>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                            {{ post.content|truncatewords:20 }}
+                        </p>
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-2">
+                                    <i class="fas fa-user text-gray-600"></i>
+                                </div>
+                                <span>{{ post.author.username }}</span>
+                            </div>
+                            <span>{{ post.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        {% if posts.paginator.num_pages > 1 %}
+            <div class="mt-12 flex justify-center">
+                <nav class="flex items-center gap-2">
+                    {% if posts.has_previous %}
+                        <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                        <a href="?page={{ posts.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    <span class="px-4 py-2 text-gray-600">
+                        Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+                    </span>
+                    
+                    {% if posts.has_next %}
+                        <a href="?page={{ posts.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                        <a href="?page={{ posts.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" 
+                           class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-16">
+            <i class="fas fa-file-alt text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No posts found</h3>
+            <p class="text-gray-500">Try adjusting your search or filter criteria.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

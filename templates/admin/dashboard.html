@@ -1,0 +1,130 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Dashboard - ModernBlog Admin{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    <p class="text-gray-500 mt-1">Welcome back, {{ user.username }}!</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Posts</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_posts }}</p>
+            </div>
+            <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-file-alt text-blue-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Published</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1">{{ published_posts }}</p>
+            </div>
+            <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-yellow-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Drafts</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1">{{ draft_posts }}</p>
+            </div>
+            <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-edit text-yellow-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Categories</p>
+                <p class="text-3xl font-bold text-gray-900 mt-1">{{ total_categories }}</p>
+            </div>
+            <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center">
+                <i class="fas fa-folder text-purple-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+        </div>
+        <div class="space-y-3">
+            <a href="{% url 'post_create' %}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="font-medium text-gray-900">Create New Post</p>
+                    <p class="text-sm text-gray-500">Add a new blog post</p>
+                </div>
+            </a>
+            
+            <a href="{% url 'category_create' %}" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center text-white">
+                    <i class="fas fa-folder-plus"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="font-medium text-gray-900">Add Category</p>
+                    <p class="text-sm text-gray-500">Create a new category</p>
+                </div>
+            </a>
+            
+            <a href="{% url 'admin_post_list' %}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+                <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center text-white">
+                    <i class="fas fa-list"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="font-medium text-gray-900">Manage Posts</p>
+                    <p class="text-sm text-gray-500">View all posts</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Posts</h2>
+            <a href="{% url 'admin_post_list' %}" class="text-sm text-blue-600 hover:text-blue-700">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for post in posts|slice:5 %}
+                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                    <div class="flex items-center">
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" class="w-10 h-10 rounded-lg object-cover">
+                        {% else %}
+                            <div class="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-image text-gray-400"></i>
+                            </div>
+                        {% endif %}
+                        <div class="ml-3">
+                            <p class="font-medium text-gray-900 text-sm">{{ post.title|truncatewords:3 }}</p>
+                            <p class="text-xs text-gray-500">{{ post.category.name }}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full {% if post.status == 'published' %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                        {{ post.status }}
+                    </span>
+                </div>
+            {% empty %}
+                <p class="text-gray-500 text-center py-4">No posts yet</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

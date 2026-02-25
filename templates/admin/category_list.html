@@ -1,0 +1,52 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Categories - ModernBlog Admin{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">Categories</h1>
+        <p class="text-gray-500 mt-1">Manage your post categories</p>
+    </div>
+    <a href="{% url 'category_create' %}" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">
+        <i class="fas fa-plus mr-2"></i>New Category
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Slug</th>
+                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Posts</th>
+                <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+            {% for category in categories %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-900">{{ category.name }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ category.slug }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">{{ category.posts.count }}</td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'category_update' category.pk %}" class="inline-block px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg mr-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'category_delete' category.pk %}" class="inline-block px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded-lg">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                        <i class="fas fa-folder text-4xl mb-4 block"></i>
+                        No categories yet. Create your first category!
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

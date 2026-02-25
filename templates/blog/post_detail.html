@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} - ModernBlog{% endblock %}
+
+{% block content %}
+<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="w-full h-96 object-cover rounded-xl mb-8">
+    {% else %}
+        <div class="w-full h-96 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl mb-8 flex items-center justify-center">
+            <i class="fas fa-image text-6xl text-white opacity-50"></i>
+        </div>
+    {% endif %}
+    
+    <div class="mb-6">
+        <span class="inline-block px-4 py-1 text-sm font-semibold text-blue-600 bg-blue-100 rounded-full">
+            {{ post.category.name }}
+        </span>
+    </div>
+    
+    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{{ post.title }}</h1>
+    
+    <div class="flex items-center gap-4 text-gray-600 mb-8 pb-8 border-b">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                <i class="fas fa-user text-gray-600"></i>
+            </div>
+            <div>
+                <p class="font-semibold text-gray-900">{{ post.author.username }}</p>
+                <p class="text-sm">Author</p>
+            </div>
+        </div>
+        <span class="text-gray-400">|</span>
+        <div class="text-sm">
+            <i class="fas fa-calendar mr-2"></i>{{ post.created_at|date:"F d, Y" }}
+        </div>
+    </div>
+    
+    <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+        {{ post.content|linebreaks }}
+    </div>
+</article>
+
+{% if related_posts %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-8">Related Posts</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {% for related in related_posts %}
+            <article class="bg-white rounded-xl shadow-sm overflow-hidden card-hover">
+                {% if related.image %}
+                    <img src="{{ related.image.url }}" alt="{{ related.title }}" class="w-full h-40 object-cover">
+                {% else %}
+                    <div class="w-full h-40 bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
+                        <i class="fas fa-image text-3xl text-white opacity-50"></i>
+                    </div>
+                {% endif %}
+                <div class="p-5">
+                    <span class="inline-block px-2 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full mb-2">
+                        {{ related.category.name }}
+                    </span>
+                    <h3 class="font-bold text-gray-800 mb-2 line-clamp-2">
+                        <a href="{% url 'post_detail' related.slug %}" class="hover:text-blue-600 transition">
+                            {{ related.title }}
+                        </a>
+                    </h3>
+                    <p class="text-gray-500 text-sm">{{ related.created_at|date:"M d, Y" }}</p>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
